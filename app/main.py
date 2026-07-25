@@ -7,7 +7,7 @@ from app.services.follow_up_service import trigger_follow_up
 app = FastAPI(title="Health Companion MVP API")
 
 @app.post("/api/v1/intake", summary="Process Voice Intake and Route")
-async process_intake(intake: PatientIntake):
+async def process_intake(intake: PatientIntake):
     try:
         # Step 1: LLM creates structured summary from voice transcript
         case_summary = generate_structured_summary(intake.raw_transcript)
