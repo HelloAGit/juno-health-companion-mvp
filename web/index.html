@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ef">
+  <title>Relay72 — Your first days home, made clearer</title>
+  <style>
+    :root {
+      --ink: #142d2a;
+      --muted: #64736f;
+      --paper: #f7f5ef;
+      --surface: #fffdf8;
+      --line: #dedfd8;
+      --mint: #dcebe4;
+      --teal: #1e6258;
+      --teal-dark: #14483f;
+      --coral: #f07b61;
+      --coral-soft: #fbe1d9;
+      --amber: #d99537;
+      --amber-soft: #faedcf;
+      --danger: #b8473d;
+      --danger-soft: #f8deda;
+      --shadow: 0 18px 50px rgba(26, 54, 49, .08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 88% 4%, rgba(240,123,97,.12), transparent 24rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 244px 1fr; }
+    .sidebar {
+      min-height: 100vh;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      padding: 28px 20px;
+      border-right: 1px solid var(--line);
+      background: rgba(247,245,239,.88);
+      backdrop-filter: blur(16px);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; margin: 0 8px 38px; }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 13px;
+      display: grid; place-items: center;
+      color: white; font-weight: 850; letter-spacing: -.05em;
+      background: var(--teal);
+      box-shadow: 0 7px 18px rgba(30,98,88,.2);
+    }
+    .brand-name { font-size: 19px; font-weight: 800; letter-spacing: -.03em; }
+    .brand-name small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .nav { display: grid; gap: 8px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 13px; border-radius: 13px;
+      color: #5d6d69; font-size: 14px; font-weight: 650;
+      border: 0; background: transparent; text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.65); }
+    .nav-item.active { background: var(--mint); color: var(--teal-dark); }
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+    .side-card {
+      margin-top: 36px; padding: 18px; border-radius: 18px;
+      background: var(--teal); color: white;
+      box-shadow: var(--shadow);
+    }
+    .side-card .eyebrow { color: rgba(255,255,255,.7); }
+    .side-card strong { display: block; font-size: 16px; margin: 8px 0 6px; }
+    .side-card p { margin: 0 0 14px; color: rgba(255,255,255,.75); font-size: 12px; line-height: 1.55; }
+    .side-card button {
+      width: 100%; border: 0; border-radius: 10px; padding: 10px;
+      color: var(--teal-dark); background: white; font-weight: 750; font-size: 12px;
+    }
+    .main { min-width: 0; }
+    .topbar {
+      height: 84px; padding: 0 4.5vw;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(222,223,216,.7);
+    }
+    .prototype-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 7px 10px; border-radius: 99px;
+      color: var(--muted); background: rgba(255,255,255,.56); font-size: 11px; font-weight: 700;
+    }
+    .prototype-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+    .user { display: flex; align-items: center; gap: 11px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+      background: var(--coral-soft); color: #8f4638; font-weight: 800; font-size: 13px;
+    }
+    .user-copy { font-size: 12px; color: var(--muted); }
+    .user-copy strong { display: block; color: var(--ink); font-size: 13px; }
+    .content { max-width: 1240px; margin: 0 auto; padding: 46px 4.5vw 72px; }
+    .eyebrow {
+      margin: 0; color: var(--teal); font-size: 10px; font-weight: 850;
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+    .welcome { display: flex; justify-content: space-between; gap: 24px; align-items: flex-end; margin-bottom: 30px; }
+    h1 { margin: 7px 0 7px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(34px, 4vw, 52px); line-height: 1.02; font-weight: 500; letter-spacing: -.045em; }
+    .welcome p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 14px; }
+    .primary-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      padding: 13px 18px; border: 0; border-radius: 13px;
+      color: white; background: var(--coral); font-weight: 780;
+      box-shadow: 0 9px 24px rgba(240,123,97,.22);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(240,123,97,.28); }
+    .grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .85fr); gap: 22px; }
+    .card {
+      border: 1px solid rgba(222,223,216,.9);
+      border-radius: var(--radius); background: rgba(255,253,248,.9);
+      box-shadow: var(--shadow);
+    }
+    .hero-card {
+      min-height: 285px; padding: 30px;
+      display: grid; grid-template-columns: 1fr 190px; gap: 30px;
+      overflow: hidden; position: relative;
+    }
+    .hero-card::after {
+      content: ""; position: absolute; width: 230px; height: 230px;
+      right: -95px; bottom: -125px; border-radius: 50%;
+      border: 42px solid var(--coral-soft); opacity: .7;
+    }
+    .status {
+      width: fit-content; display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 99px; background: var(--mint);
+      color: var(--teal-dark); font-size: 11px; font-weight: 780;
+    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #41917d; }
+    .hero-card h2 { margin: 20px 0 9px; max-width: 480px; font-family: Georgia, "Times New Roman", serif; font-size: 29px; line-height: 1.13; font-weight: 500; letter-spacing: -.025em; }
+    .hero-card p { margin: 0; max-width: 500px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .day-ring { align-self: center; position: relative; width: 164px; height: 164px; display: grid; place-items: center; }
+    .day-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+    .day-ring circle { fill: none; stroke-width: 10; }
+    .day-ring .track { stroke: #e8e8e1; }
+    .day-ring .progress { stroke: var(--coral); stroke-linecap: round; stroke-dasharray: 452; stroke-dashoffset: 323; }
+    .ring-copy { text-align: center; position: relative; z-index: 1; }
+    .ring-copy strong { display: block; font-family: Georgia, serif; font-size: 42px; font-weight: 500; line-height: 1; }
+    .ring-copy span { color: var(--muted); font-size: 11px; font-weight: 700; }
+    .mini-card { padding: 24px; }
+    .card-title { display: flex; justify-content: space-between; gap: 15px; align-items: center; margin-bottom: 20px; }
+    .card-title h3 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+    .link-btn { border: 0; padding: 0; background: transparent; color: var(--teal); font-size: 12px; font-weight: 780; }
+    .contact {
+      display: flex; align-items: center; gap: 13px; padding: 13px;
+      border-radius: 15px; background: #f3f1ea;
+    }
+    .contact-avatar { width: 42px; height: 42px; border-radius: 13px; background: var(--mint); display: grid; place-items: center; font-weight: 800; color: var(--teal); }
+    .contact-copy { min-width: 0; flex: 1; }
+    .contact-copy strong { display: block; font-size: 13px; }
+    .contact-copy span { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+    .contact-action { width: 34px; height: 34px; border: 0; border-radius: 11px; background: white; color: var(--teal); font-weight: 800; }
+    .section-card { margin-top: 22px; padding: 28px; }
+    .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .timeline-step { position: relative; padding: 0 18px 0 38px; min-height: 88px; }
+    .timeline-step::before {
+      content: ""; position: absolute; left: 8px; top: 9px; width: 13px; height: 13px;
+      border-radius: 50%; background: var(--surface); border: 4px solid var(--line); z-index: 2;
+    }
+    .timeline-step.done::before { background: var(--teal); border-color: var(--mint); }
+    .timeline-step.active::before { background: var(--coral); border-color: var(--coral-soft); }
+    .timeline-step:not(:last-child)::after { content: ""; position: absolute; height: 2px; top: 16px; left: 24px; right: -8px; background: var(--line); }
+    .timeline-step.done::after { background: var(--teal); opacity: .35; }
+    .timeline-step span { color: var(--muted); font-size: 10px; font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+    .timeline-step strong { display: block; margin-top: 7px; font-size: 13px; line-height: 1.35; }
+    .timeline-step small { display: block; color: var(--muted); margin-top: 5px; font-size: 11px; line-height: 1.4; }
+    .tasks { display: grid; gap: 10px; }
+    .task {
+      display: flex; align-items: center; gap: 12px; padding: 13px 0;
+      border-bottom: 1px solid var(--line); font-size: 12px;
+    }
+    .task:last-child { border-bottom: 0; }
+    .check {
+      flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px;
+      display: grid; place-items: center; background: var(--mint); color: var(--teal); font-size: 12px; font-weight: 900;
+    }
+    .task-copy { flex: 1; }
+    .task-copy strong { display: block; font-size: 12px; }
+    .task-copy span { color: var(--muted); font-size: 10px; }
+    .med-pill { padding: 5px 8px; border-radius: 8px; background: #f1efe8; color: var(--muted); font-size: 9px; font-weight: 750; }
+    .safety {
+      margin-top: 22px; padding: 18px 20px; display: flex; gap: 12px;
+      border: 1px solid #e9d7ad; border-radius: 17px; background: var(--amber-soft);
+      color: #674918; font-size: 11px; line-height: 1.55;
+    }
+    .safety strong { display: block; margin-bottom: 2px; font-size: 12px; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 50; padding: 20px;
+      display: none; place-items: center; background: rgba(15,35,31,.52); backdrop-filter: blur(9px);
+    }
+    .modal-backdrop.open { display: grid; }
+    .modal {
+      width: min(680px, 100%); max-height: calc(100vh - 40px); overflow-y: auto;
+      border-radius: 26px; background: var(--surface); box-shadow: 0 28px 90px rgba(10,30,26,.26);
+    }
+    .modal-header { display: flex; justify-content: space-between; gap: 20px; padding: 26px 28px 19px; border-bottom: 1px solid var(--line); }
+    .modal-header h2 { margin: 5px 0 0; font-family: Georgia, serif; font-size: 25px; font-weight: 500; }
+    .close-btn { flex: 0 0 auto; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #efede6; color: var(--ink); }
+    .form { padding: 24px 28px 28px; }
+    .field { margin-bottom: 22px; }
+    .field label, .field legend { display: block; margin-bottom: 10px; font-size: 12px; font-weight: 780; }
+    .field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 10px; }
+    .field-label-row label { margin: 0; }
+    .voice-btn {
+      display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px;
+      border: 1px solid var(--line); border-radius: 10px; color: var(--teal);
+      background: white; font-size: 10px; font-weight: 800;
+    }
+    .voice-btn:hover { border-color: var(--teal); }
+    .voice-btn.recording { color: var(--danger); border-color: #e8aaa3; background: var(--danger-soft); }
+    .voice-btn.processing { color: #805814; border-color: #e5c47d; background: var(--amber-soft); pointer-events: none; }
+    .voice-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .voice-btn.recording .voice-dot { animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.7); opacity: .45; } }
+    .voice-note { display: block; margin-top: 7px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    fieldset { padding: 0; border: 0; }
+    .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice span {
+      min-height: 46px; display: grid; place-items: center; padding: 10px;
+      border: 1px solid var(--line); border-radius: 12px; color: var(--muted);
+      background: white; font-size: 12px; font-weight: 700;
+    }
+    .choice input:checked + span { color: var(--teal-dark); border-color: var(--teal); background: var(--mint); }
+    .range-row { display: grid; grid-template-columns: 1fr 45px; gap: 14px; align-items: center; }
+    input[type="range"] { width: 100%; accent-color: var(--coral); }
+    .range-value { height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--coral-soft); color: #854335; font-weight: 850; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .text-input, textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px 13px; color: var(--ink); background: white; outline: none;
+    }
+    .text-input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(30,98,88,.1); }
+    textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+    .form-footer { display: flex; justify-content: space-between; gap: 14px; align-items: center; padding-top: 5px; }
+    .form-footer small { max-width: 340px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .loading { opacity: .65; pointer-events: none; }
+    .result { display: none; padding: 28px; }
+    .result.visible { display: block; }
+    .result-icon { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; margin-bottom: 18px; background: var(--mint); color: var(--teal); font-size: 22px; font-weight: 900; }
+    .result.review .result-icon { background: var(--amber-soft); color: #8b5e17; }
+    .result.urgent .result-icon { background: var(--danger-soft); color: var(--danger); }
+    .result h2 { margin: 0 0 8px; font-family: Georgia, serif; font-size: 28px; font-weight: 500; }
+    .result > p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .action-list { margin: 22px 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+    .action-list li { position: relative; padding: 11px 12px 11px 36px; border-radius: 12px; background: #f2f0e9; font-size: 12px; font-weight: 650; }
+    .action-list li::before { content: "✓"; position: absolute; left: 13px; color: var(--teal); font-weight: 900; }
+    .summary-box { padding: 14px; border-radius: 13px; border: 1px solid var(--line); background: white; font-size: 11px; line-height: 1.55; color: var(--muted); }
+    .result-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .secondary-btn { padding: 12px 15px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: white; font-weight: 750; font-size: 12px; }
+    .toast {
+      position: fixed; right: 24px; bottom: 24px; z-index: 90;
+      transform: translateY(18px); opacity: 0; pointer-events: none;
+      padding: 12px 15px; border-radius: 12px; color: white; background: var(--ink);
+      box-shadow: var(--shadow); font-size: 12px; font-weight: 700; transition: .25s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .mobile-nav { display: none; }
+
+    @media (max-width: 980px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding-bottom: 105px; }
+      .mobile-nav {
+        position: fixed; z-index: 30; left: 14px; right: 14px; bottom: 12px;
+        display: grid; grid-template-columns: repeat(4,1fr); padding: 8px;
+        border: 1px solid rgba(222,223,216,.8); border-radius: 18px;
+        background: rgba(255,253,248,.94); box-shadow: 0 16px 50px rgba(20,45,42,.18); backdrop-filter: blur(16px);
+      }
+      .mobile-nav button { border: 0; background: transparent; color: var(--muted); font-size: 10px; font-weight: 700; }
+      .mobile-nav button span { display: block; margin-bottom: 3px; font-size: 16px; }
+      .mobile-nav .active { color: var(--teal); }
+    }
+    @media (max-width: 720px) {
+      .topbar { height: 72px; }
+      .user-copy { display: none; }
+      .content { padding-top: 32px; }
+      .welcome { align-items: flex-start; flex-direction: column; }
+      .grid { grid-template-columns: 1fr; }
+      .hero-card { grid-template-columns: 1fr; }
+      .day-ring { width: 138px; height: 138px; margin: 0 auto; }
+      .day-ring svg { width: 138px; height: 138px; }
+      .hero-card::after { display: none; }
+      .timeline { grid-template-columns: 1fr; gap: 18px; }
+      .timeline-step { padding-left: 38px; }
+      .timeline-step:not(:last-child)::after { width: 2px; height: calc(100% + 18px); left: 14px; top: 19px; right: auto; }
+      .two-col { grid-template-columns: 1fr; gap: 0; }
+      .form-footer { align-items: stretch; flex-direction: column; }
+      .form-footer .primary-btn { width: 100%; }
+    }
+    @media (max-width: 460px) {
+      .topbar, .content { padding-left: 18px; padding-right: 18px; }
+      .prototype-pill { font-size: 9px; }
+      .hero-card, .mini-card, .section-card { padding: 21px; }
+      .choices { gap: 6px; }
+      .choice span { font-size: 10px; }
+      .modal-backdrop { padding: 0; align-items: end; }
+      .modal { max-height: 94vh; border-radius: 24px 24px 0 0; }
+      .modal-header, .form, .result { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">72</div>
+        <div class="brand-name">Relay72<small>Recovery, connected</small></div>
+      </div>
+      <nav class="nav" aria-label="Primary navigation">
+        <button class="nav-item active"><span class="nav-icon">⌂</span>Today</button>
+        <button class="nav-item"><span class="nav-icon">✓</span>My care plan</button>
+        <button class="nav-item"><span class="nav-icon">＋</span>Medicines</button>
+        <button class="nav-item"><span class="nav-icon">↗</span>Care team</button>
+      </nav>
+      <div class="side-card">
+        <p class="eyebrow">Need help?</p>
+        <strong>Your discharge team</strong>
+        <p>Use the number on your paperwork for clinical questions. In an emergency, call 999/112.</p>
+        <button id="sideContact">View contact details</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <span class="prototype-pill">Interactive product prototype</span>
+        <div class="user">
+          <div class="user-copy"><strong>Maya Patel</strong>Post-discharge plan</div>
+          <div class="avatar" aria-hidden="true">MP</div>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="welcome">
+          <div>
+            <p class="eyebrow">Saturday · Recovery day 2</p>
+            <h1>Good afternoon, Maya.</h1>
+            <p>One short check-in keeps everyone on the same page.</p>
+          </div>
+          <button class="primary-btn" id="startCheckIn"><span>＋</span> Start 60-sec check-in</button>
+        </section>
+
+        <section class="grid" aria-label="Recovery overview">
+          <article class="card hero-card">
+            <div>
+              <span class="status"><span class="status-dot"></span><span id="dashboardStatus">Recovery on track</span></span>
+              <h2 id="dashboardHeadline">You’re settling in well after your procedure.</h2>
+              <p id="dashboardMessage">Your last update showed manageable pain and no warning signs. Complete today’s check-in so your care team has the latest picture.</p>
+            </div>
+            <div class="day-ring" aria-label="Day 2 of 7">
+              <svg viewBox="0 0 164 164" aria-hidden="true">
+                <circle class="track" cx="82" cy="82" r="72"></circle>
+                <circle class="progress" cx="82" cy="82" r="72"></circle>
+              </svg>
+              <div class="ring-copy"><strong>2</strong><span>of 7 days</span></div>
+            </div>
+          </article>
+
+          <aside class="card mini-card">
+            <div class="card-title">
+              <h3>Your care contact</h3>
+              <button class="link-btn" id="shareButton">Share update</button>
+            </div>
+            <div class="contact">
+              <div class="contact-avatar">SJ</div>
+              <div class="contact-copy"><strong>St James’ Day Unit</strong><span>Discharge support · 08:00–18:00</span></div>
+              <button class="contact-action" id="contactButton" aria-label="Show contact number">↗</button>
+            </div>
+            <div class="safety">
+              <span aria-hidden="true">ⓘ</span>
+              <div><strong>This is a prototype</strong>Relay72 supports care navigation. It does not diagnose, monitor continuously, or replace a clinician.</div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="card section-card">
+          <div class="card-title">
+            <div><p class="eyebrow">Your first 72 hours</p><h3 style="margin-top:6px">Recovery relay</h3></div>
+            <button class="link-btn" id="planButton">View full plan</button>
+          </div>
+          <div class="timeline">
+            <div class="timeline-step done">
+              <span>Yesterday</span>
+              <strong>Discharge plan simplified</strong>
+              <small>Medicines and warning signs organised.</small>
+            </div>
+            <div class="timeline-step active">
+              <span>Today · due now</span>
+              <strong>60-second recovery check</strong>
+              <small>Pain, symptoms, temperature and medicines.</small>
+            </div>
+            <div class="timeline-step">
+              <span>Tomorrow</span>
+              <strong>Care-team handoff</strong>
+              <small>A concise update is ready if review is needed.</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid">
+          <article class="card section-card">
+            <div class="card-title"><h3>Today’s care plan</h3><span class="status">2 of 3 complete</span></div>
+            <div class="tasks">
+              <div class="task">
+                <span class="check">✓</span>
+                <div class="task-copy"><strong>Morning medicine</strong><span>Paracetamol · logged at 08:12</span></div>
+                <span class="med-pill">DONE</span>
+              </div>
+              <div class="task">
+                <span class="check">✓</span>
+                <div class="task-copy"><strong>Light movement</strong><span>Five-minute walk · logged at 10:40</span></div>
+                <span class="med-pill">DONE</span>
+              </div>
+              <div class="task">
+                <span class="check" style="background:#f1efe8;color:#8b8f88">○</span>
+                <div class="task-copy"><strong>Recovery check-in</strong><span>Due now · about one minute</span></div>
+                <button class="link-btn open-checkin">Start</button>
+              </div>
+            </div>
+          </article>
+          <aside class="card section-card">
+            <div class="card-title"><h3>Next medicine</h3><span class="med-pill">14:00</span></div>
+            <div class="contact" style="background:var(--coral-soft)">
+              <div class="contact-avatar" style="background:white;color:#9a4d3e">P</div>
+              <div class="contact-copy"><strong>Paracetamol</strong><span>2 × 500 mg tablets · with water</span></div>
+            </div>
+            <p style="margin:15px 2px 0;color:var(--muted);font-size:10px;line-height:1.55">Always follow the instructions supplied by your clinical team or pharmacist.</p>
+          </aside>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="active"><span>⌂</span>Today</button>
+    <button><span>✓</span>Plan</button>
+    <button><span>＋</span>Meds</button>
+    <button><span>↗</span>Team</button>
+  </nav>
+
+  <div class="modal-backdrop" id="checkInModal" role="dialog" aria-modal="true" aria-labelledby="checkInTitle">
+    <div class="modal">
+      <div id="formView">
+        <div class="modal-header">
+          <div><p class="eyebrow">Recovery day 2</p><h2 id="checkInTitle">How are you feeling today?</h2></div>
+          <button class="close-btn close-modal" aria-label="Close">×</button>
+        </div>
+        <form class="form" id="checkInForm">
+          <fieldset class="field">
+            <legend>Compared with yesterday, your symptoms feel…</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="symptom_change" value="better" checked><span>Better</span></label>
+              <label class="choice"><input type="radio" name="symptom_change" value="same"><span>About the same</span></label>
+              <label class="choice"><input type="radio" name="symptom_change" value="worse"><span>Worse</span></label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="painScore">Your pain right now (0 = none, 10 = worst)</label>
+            <div class="range-row"><input id="painScore" type="range" min="0" max="10" value="3"><output class="range-value" id="painValue">3</output></div>
+          </div>
+          <div class="two-col">
+            <div class="field">
+              <label for="temperature">Temperature in °C (optional)</label>
+              <input class="text-input" id="temperature" type="number" min="30" max="45" step=".1" placeholder="e.g. 36.8">
+            </div>
+            <fieldset class="field">
+              <legend>Medicines today</legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="medication_status" value="all" checked><span>All taken</span></label>
+                <label class="choice"><input type="radio" name="medication_status" value="some"><span>Some missed</span></label>
+                <label class="choice"><input type="radio" name="medication_status" value="not_sure"><span>Not sure</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="field">
+            <div class="field-label-row">
+              <label for="notes">Anything else your care team should know?</label>
+              <button class="voice-btn" id="voiceButton" type="button">
+                <span class="voice-dot"></span><span id="voiceButtonText">Speak instead</span>
+              </button>
+            </div>
+            <textarea id="notes" maxlength="2000" placeholder="For example: the wound looks different, I felt dizzy, or I’m unsure about a medicine."></textarea>
+            <small class="voice-note" id="voiceNote">Your recording is sent to ElevenLabs for transcription. Relay72 does not save the audio file in this prototype.</small>
+          </div>
+          <div class="form-footer">
+            <small>If you think this is an emergency, do not wait for the app. Call 999/112 now.</small>
+            <button class="primary-btn" id="submitButton" type="submit">Send check-in <span>→</span></button>
+          </div>
+        </form>
+      </div>
+      <div class="result" id="resultView">
+        <div class="result-icon" id="resultIcon">✓</div>
+        <h2 id="resultHeadline"></h2>
+        <p id="resultMessage"></p>
+        <ul class="action-list" id="actionList"></ul>
+        <p class="eyebrow" style="margin-bottom:8px">Prepared care-team handoff</p>
+        <div class="summary-box" id="summaryBox"></div>
+        <div class="result-actions">
+          <button class="primary-btn" id="copySummary">Copy update</button>
+          <button class="secondary-btn close-modal">Back to dashboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const modal = document.getElementById("checkInModal");
+    const form = document.getElementById("checkInForm");
+    const formView = document.getElementById("formView");
+    const resultView = document.getElementById("resultView");
+    const painScore = document.getElementById("painScore");
+    const painValue = document.getElementById("painValue");
+    const toast = document.getElementById("toast");
+    const voiceButton = document.getElementById("voiceButton");
+    const voiceButtonText = document.getElementById("voiceButtonText");
+    const voiceNote = document.getElementById("voiceNote");
+    let latestSummary = "No check-in has been completed yet.";
+    let mediaRecorder = null;
+    let mediaStream = null;
+    let audioChunks = [];
+    let recordingTimer = null;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function openCheckIn() {
+      formView.style.display = "block";
+      resultView.className = "result";
+      modal.classList.add("open");
+      document.body.style.overflow = "hidden";
+      window.setTimeout(() => painScore.focus(), 60);
+    }
+
+    function closeCheckIn() {
+      modal.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("startCheckIn").addEventListener("click", openCheckIn);
+    document.querySelectorAll(".open-checkin").forEach(button => button.addEventListener("click", openCheckIn));
+    document.querySelectorAll(".close-modal").forEach(button => button.addEventListener("click", closeCheckIn));
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeCheckIn();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeCheckIn();
+    });
+    painScore.addEventListener("input", () => { painValue.textContent = painScore.value; });
+
+    voiceButton.addEventListener("click", async () => {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        stopRecording();
+        return;
+      }
+      await startRecording();
+    });
+
+    async function startRecording() {
+      if (!navigator.mediaDevices || !window.MediaRecorder) {
+        showToast("Voice recording is not supported in this browser");
+        return;
+      }
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({audio: true});
+        const supportedTypes = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
+        const mimeType = supportedTypes.find(type => MediaRecorder.isTypeSupported(type));
+        mediaRecorder = new MediaRecorder(mediaStream, mimeType ? {mimeType} : undefined);
+        audioChunks = [];
+        mediaRecorder.addEventListener("dataavailable", event => {
+          if (event.data.size > 0) audioChunks.push(event.data);
+        });
+        mediaRecorder.addEventListener("stop", transcribeRecording, {once: true});
+        mediaRecorder.start();
+        voiceButton.className = "voice-btn recording";
+        voiceButtonText.textContent = "Stop recording";
+        voiceNote.textContent = "Listening… Speak for up to 45 seconds, then press Stop.";
+        recordingTimer = window.setTimeout(stopRecording, 45000);
+      } catch (error) {
+        showToast("Microphone access was not granted");
+      }
+    }
+
+    function stopRecording() {
+      window.clearTimeout(recordingTimer);
+      if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+      if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+      voiceButton.className = "voice-btn processing";
+      voiceButtonText.textContent = "Transcribing…";
+      voiceNote.textContent = "Turning your recording into text with ElevenLabs.";
+    }
+
+    async function transcribeRecording() {
+      try {
+        const mimeType = mediaRecorder.mimeType || "audio/webm";
+        const extension = mimeType.includes("mp4") ? "m4a" : "webm";
+        const audioBlob = new Blob(audioChunks, {type: mimeType});
+        const upload = new FormData();
+        upload.append("audio", audioBlob, "relay72-check-in." + extension);
+        const response = await fetch("/api/v1/transcribe", {
+          method: "POST",
+          body: upload
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "The recording could not be transcribed");
+        }
+        const notes = document.getElementById("notes");
+        notes.value = [notes.value.trim(), data.transcript].filter(Boolean).join(" ");
+        notes.focus();
+        showToast("Voice note added to your check-in");
+      } catch (error) {
+        showToast(error.message);
+      } finally {
+        audioChunks = [];
+        voiceButton.className = "voice-btn";
+        voiceButtonText.textContent = "Speak instead";
+        voiceNote.textContent = "Your recording is sent to ElevenLabs for transcription. Relay72 does not save the audio file in this prototype.";
+      }
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const submitButton = document.getElementById("submitButton");
+      const temperatureValue = document.getElementById("temperature").value;
+      const payload = {
+        patient_id: "demo_maya_patel",
+        recovery_day: 2,
+        symptom_change: form.elements.symptom_change.value,
+        pain_score: Number(painScore.value),
+        temperature_c: temperatureValue ? Number(temperatureValue) : null,
+        medication_status: form.elements.medication_status.value,
+        notes: document.getElementById("notes").value.trim()
+      };
+
+      submitButton.textContent = "Reviewing update…";
+      form.classList.add("loading");
+      try {
+        const response = await fetch("/api/v1/check-in", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error("The check-in could not be processed.");
+        const data = await response.json();
+        latestSummary = data.care_team_summary;
+        renderResult(data);
+      } catch (error) {
+        showToast(error.message + " Please try again.");
+      } finally {
+        submitButton.innerHTML = "Send check-in <span>→</span>";
+        form.classList.remove("loading");
+      }
+    });
+
+    function renderResult(data) {
+      formView.style.display = "none";
+      resultView.className = "result visible " + data.status;
+      document.getElementById("resultIcon").textContent =
+        data.status === "urgent" ? "!" : data.status === "review" ? "↗" : "✓";
+      document.getElementById("resultHeadline").textContent = data.headline;
+      document.getElementById("resultMessage").textContent = data.message;
+      document.getElementById("summaryBox").textContent = data.care_team_summary;
+      document.getElementById("actionList").innerHTML =
+        data.next_actions.map(action => "<li>" + escapeHtml(action) + "</li>").join("");
+
+      const status = document.getElementById("dashboardStatus");
+      const headline = document.getElementById("dashboardHeadline");
+      const message = document.getElementById("dashboardMessage");
+      status.textContent = data.status === "on_track" ? "Recovery on track" :
+        data.status === "review" ? "Care-team review suggested" : "Urgent action suggested";
+      headline.textContent = data.headline;
+      message.textContent = data.message + " " + data.follow_up + ".";
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement("div");
+      div.textContent = value;
+      return div.innerHTML;
+    }
+
+    async function copyLatest() {
+      try {
+        await navigator.clipboard.writeText(latestSummary);
+        showToast("Care-team update copied");
+      } catch (_) {
+        showToast("Copy is not available in this browser");
+      }
+    }
+    document.getElementById("copySummary").addEventListener("click", copyLatest);
+    document.getElementById("shareButton").addEventListener("click", copyLatest);
+    document.getElementById("contactButton").addEventListener("click", () => showToast("Demo contact: 0113 000 0142"));
+    document.getElementById("sideContact").addEventListener("click", () => showToast("Demo contact: 0113 000 0142 · 08:00–18:00"));
+    document.getElementById("planButton").addEventListener("click", () => showToast("Full recovery plan view is next in the MVP"));
+  </script>
+</body>
+</html>
