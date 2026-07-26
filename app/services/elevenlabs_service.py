@@ -39,7 +39,11 @@ async def transcribe_audio(
         raise TranscriptionRequestError("The audio recording is empty")
     if len(audio) > MAX_AUDIO_BYTES:
         raise TranscriptionRequestError("The audio recording exceeds 10 MB")
-    if content_type not in ALLOWED_AUDIO_TYPES:
+
+    # MediaRecorder MIME types often include codec parameters, such as
+    # "audio/webm;codecs=opus". Validate and forward the container MIME type.
+    normalized_content_type = content_type.split(";", 1)[0].strip().lower()
+    if normalized_content_type not in ALLOWED_AUDIO_TYPES:
         raise TranscriptionRequestError("Unsupported audio format")
 
     try:
@@ -55,7 +59,7 @@ async def transcribe_audio(
                     "file": (
                         filename or "relay72-check-in.webm",
                         audio,
-                        content_type,
+                        normalized_content_type,
                     )
                 },
             )
